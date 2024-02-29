@@ -1,4 +1,5 @@
 import pandas as pd
+import difflib
 import sys
 import os
 
@@ -7,7 +8,6 @@ caminho_excel = os.path.join(diretorio_script_principal, 'enderecos.xlsx')
 
 dados = pd.read_excel(caminho_excel, sheet_name='tabelaValores')
 
-import difflib
 
 def buscar_regioes_aproximadas(regiao_digitada, regioes_disponiveis):
     """
@@ -64,6 +64,8 @@ def regiaoMotoboy():
     Returns:
     None
     """
+    regiao_correspondente = ""  # Initialize variable herev
+
     try:
         regiao_digitada = input('\nDigite a região (Exemplo: Diadema): ').strip().lower()
         print()
@@ -71,80 +73,6 @@ def regiaoMotoboy():
     except Exception as errorValue:
         print(f'\nOcorreu um erro!! [{errorValue}].')
     else:
-        try:
-            pass
-            # peso = float(input('Digite o peso: '))
-
-        except ValueError as errorValue:
-            print(f"\nOcorreu um erro!! [{errorValue}]")
-            print('Digite somente números inteiros ou decimal para o Peso.')
-
-        else:
-            dados['Local'] = dados['Local'].str.lower()
-            # dadosPontos = dados['Pontos'].copy()  # Copia a série para evitar modificar a tabela original
-            #
-            # if peso >= 10:
-            #     dadosPontos += 1
-            # elif 20 <= peso <= 25:
-            #     dadosPontos += 2
-            # elif peso > 25:
-            #     print('Este serviço não pode ser feito, Risco de Segurança ao Motoboy!!')
-            # else:
-            #     print('teste')
-            #
-            # # Atualizar temporariamente a tabela com a nova pontuação
-            # dados_temporarios = dados.copy()
-            # dados_temporarios['Pontos'] = dadosPontos
-
-            # Obter a lista de regiões disponíveis
-            regioes_disponiveis = dados['Local'].unique()
-
-            # Verificar se a região digitada é uma correspondência exata
-            if regiao_digitada in regioes_disponiveis:
-                regiao_correspondente = regiao_digitada
-                return regiao_correspondente#, dados_temporarios
-            else:
-                # Tentar encontrar correspondências aproximadas
-                correspondencias_aproximadas = buscar_regioes_aproximadas(regiao_digitada, regioes_disponiveis)
-
-                if correspondencias_aproximadas:
-                    exibir_correspondencias_e_valores(correspondencias_aproximadas, "ValorMotoboy")
-                else:
-                    print('Nenhuma correspondência aproximada encontrada.')
-                    return
-
-                # Pode escolher uma das correspondências aproximadas
-                escolha = input('\nEscolha uma das opções acima ou pressione '
-                                'Enter para tentar novamente: ').strip().lower()
-
-                if escolha in correspondencias_aproximadas:
-                    regiao_correspondente = escolha
-                else:
-                    print('Escolha inválida. Tente novamente.')
-                    return
-
-            # Obter e exibir o valor do frete para Cliente
-            valor_motoboy = obter_valor_frete(regiao_correspondente, "ValorMotoboy")
-            print(f'\nValor do Frete para {regiao_correspondente.capitalize()}: R$ {valor_motoboy:.2f}')
-
-
-def regiaoCliente():
-    """
-    Obtém e imprime o valor do frete para a região inserida pelo usuário (cliente).
-
-    Returns:
-    None
-    """
-    try:
-        # Pedir ao usuário para digitar a região
-        regiao_digitada = input('\nDigite a região (Exemplo: Diadema): ').strip().lower()
-
-    except Exception as errorValue:
-        print(f'\nOcorreu um erro!! [{errorValue}].')
-        print('Digite a região, por favor.')
-
-    else:
-        # Converter a coluna "Local" para minúsculas para comparação insensível a maiúsculas/minúsculas
         dados['Local'] = dados['Local'].str.lower()
 
         # Obter a lista de regiões disponíveis
@@ -159,7 +87,7 @@ def regiaoCliente():
             correspondencias_aproximadas = buscar_regioes_aproximadas(regiao_digitada, regioes_disponiveis)
 
             if correspondencias_aproximadas:
-                exibir_correspondencias_e_valores(correspondencias_aproximadas, "ValorCliente")
+                exibir_correspondencias_e_valores(correspondencias_aproximadas, "ValorMotoboy")
             else:
                 print('Nenhuma correspondência aproximada encontrada.')
                 return
@@ -174,6 +102,63 @@ def regiaoCliente():
                 print('Escolha inválida. Tente novamente.')
                 return
 
-            # Obter e exibir o valor do frete para Cliente
-            valor_cliente = obter_valor_frete(regiao_correspondente, "ValorCliente")
-            print(f'\nValor do Frete para {regiao_correspondente.capitalize()}: R$ {valor_cliente:.2f}')
+        # Obter e exibir o valor do frete para Cliente
+        valor_motoboy = obter_valor_frete(regiao_correspondente, "ValorMotoboy")
+        print(f'\nValor do Frete para {regiao_correspondente.capitalize()}: R$ {valor_motoboy:.2f}')
+
+
+def regiaoCliente():
+    """
+    Obtém e imprime o valor do frete para a região inserida pelo usuário (cliente).
+
+    Returns:
+    None
+    """
+    regiao_correspondente = ""  # Initialize variable here
+    while True:
+        try:
+            # Pedir ao usuário para digitar a região
+            regiao_digitada = str(input('\nDigite a região (Exemplo: Diadema): ')).strip().lower()
+
+        except Exception as errorValue:
+            print(f'\nOcorreu um erro!! [{errorValue}].')
+            print('Digite a região, por favor.')
+            continue
+
+        # Converter a coluna "Local" para minúsculas para comparação insensível a maiúsculas/minúsculas
+        dados['Local'] = dados['Local'].str.lower()
+
+        # Obter a lista de regiões disponíveis
+        regioes_disponiveis = dados['Local'].unique()
+
+        # Verificar se a região digitada é uma correspondência exata
+        if regiao_digitada in regioes_disponiveis:
+            regiao_correspondente = regiao_digitada
+            break
+        else:
+            # Tentar encontrar correspondências aproximadas
+            correspondencias_aproximadas = buscar_regioes_aproximadas(regiao_digitada, regioes_disponiveis)
+
+            if correspondencias_aproximadas:
+                exibir_correspondencias_e_valores(correspondencias_aproximadas, "ValorCliente")
+            else:
+                print('Nenhuma correspondência aproximada encontrada.')
+                continue
+
+            # Pode escolher uma das correspondências aproximadas
+            escolha = input('\nEscolha uma das opções acima ou pressione '
+                            'Enter para tentar novamente: ').strip().lower()
+
+            if escolha in correspondencias_aproximadas:
+                regiao_correspondente = escolha
+                break
+            else:
+                print('Escolha inválida. Tente novamente.')
+                continue
+
+    # Obter e exibir o valor do frete para Cliente
+    valor_cliente = obter_valor_frete(regiao_correspondente, "ValorCliente")
+    if valor_cliente is not None:
+        print(f'\nValor do Frete para {regiao_correspondente.capitalize()}: R$ {valor_cliente:.2f}')
+    else:
+        print(f'Não foi possível encontrar o valor do frete para {regiao_correspondente.capitalize()}')

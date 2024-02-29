@@ -1,8 +1,6 @@
 from valorBairros import regiaoCliente, regiaoMotoboy
 import warnings
-
-# Desativar os avisos relacionados ao Openpyxl
-warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl.worksheet._reader")
+warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 
 # Sistema de Preços (Motoboy)
 
